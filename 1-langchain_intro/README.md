@@ -211,3 +211,11 @@ For linux
 ```bash
 curl -fsSL https://ollama.com/install.sh | sh
 ```
+
+Recommended models
+```bash
+ollama pull llama3.1:8b # For general work
+ollama pull mistral:7b # Very fast
+ollama pull rockn/Qwen2.5-Omni-7B-Q4_K_M # For vision and voice 
+ollama pull mxbai-embed-large # For embedding
+```
