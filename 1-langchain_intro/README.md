@@ -200,4 +200,14 @@ This course uses the [dotenv](https://pypi.org/project/python-dotenv) module to 
 
 ### Development Environment
 
-The course uses [Jupyter](https://jupyter.org/) notebooks. Jupyter is installed and can be run as described above. Jupyter notebooks can also be edited and run in VSCode or other VSCode variants such as Windsurf or Cursor.  
+The course uses [Jupyter](https://jupyter.org/) notebooks. Jupyter is installed and can be run as described above. Jupyter notebooks can also be edited and run in VSCode or other VSCode variants such as Windsurf or Cursor. 
+
+
+### Ollama Option
+
+To save cost and still be able to practice these codes, Ollama was installed.
+
+For linux
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
