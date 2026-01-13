@@ -8,3 +8,4 @@ langgraph-cli[inmem]>=0.4.0
 langchain-mcp-adapters
 langchain-ollama
 jupyterlab-git
+pandas
