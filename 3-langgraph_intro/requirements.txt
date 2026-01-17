@@ -11,4 +11,7 @@ langchain-tavily
 wikipedia
 trustcall
 langgraph-cli[inmem]
+jupyterlab>=4.5.1
+langchain-ollama
+jupyterlab-git
 
