@@ -9,4 +9,5 @@ langchain-mcp-adapters
 langchain-ollama
 jupyterlab>=4.5.1
 jupyterlab-git
+ipywidgets
 pandas
