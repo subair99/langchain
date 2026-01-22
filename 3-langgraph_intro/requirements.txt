@@ -17,4 +17,5 @@ jupyterlab-git
 transformers 
 torch 
 sentencepiece
+langgraph-cli
 
