@@ -1,21 +1,30 @@
-langgraph
-langgraph-prebuilt
-langgraph-sdk
-langgraph-checkpoint-sqlite
-langsmith
-langchain-community
-langchain-core
-langchain-openai
-notebook
-langchain-tavily
-wikipedia
-trustcall
-langgraph-cli[inmem]
-jupyterlab>=4.5.1
-langchain-ollama
-jupyterlab-git
-transformers 
-torch 
-sentencepiece
-langgraph-cli
+# --- Core Framework & Orchestration ---
+langchain-core>=1.2.7
+langchain>=1.2.7
+langchain-community>=0.3.0
+langgraph>=1.0.6
+langgraph-prebuilt>=1.0.7
+langgraph-checkpoint-sqlite>=3.0.3
 
+# --- Local & Search Tools ---
+langchain-ollama>=0.2.0
+langchain-openai>=0.3.0
+langchain-tavily>=0.2.17
+wikipedia>=1.4.0
+trustcall>=0.0.12
+
+# --- SDK & Development ---
+langgraph-sdk>=0.3.3
+langsmith>=0.3.0
+langgraph-cli[inmem]>=0.4.12
+json-repair>=0.30.0
+
+# --- Compute & ML Infrastructure ---
+torch>=2.5.0
+transformers>=4.47.0
+sentencepiece>=0.2.0
+
+# --- Environment & Interface ---
+notebook>=7.3.0
+jupyterlab>=4.5.1
+jupyterlab-git>=0.50.1
