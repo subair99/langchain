@@ -1,0 +1,15 @@
+[project]
+name = "4-langchain-essentials"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "jupyter>=1.0.0",
+    "langchain>=1.0.0",
+    "langchain-anthropic>=1.0.0",
+    "langchain-community>=0.4.1",
+    "langchain-openai>=1.0.0",
+    "langgraph>=1.0.0",
+    "langgraph-cli[inmem]>=0.4.0",
+]
