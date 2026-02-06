@@ -74,7 +74,7 @@ requires-dist = [
     { name = "numpy", specifier = "==2.4.2" },
     { name = "pypdf", specifier = ">=6.2.0" },
     { name = "scipy", specifier = ">=1.16.3" },
-    { name = "sounddevice", specifier = ">=0.5.5" },
+    { name = "sounddevice", specifier = ">=0.5.3" },
     { name = "tavily", specifier = ">=1.1.0" },
     { name = "tavily-python", specifier = ">=0.7.13" },
     { name = "tqdm", specifier = ">=4.67.1" },
