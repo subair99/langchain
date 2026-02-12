@@ -28,3 +28,4 @@ langchain-ollama>=0.2.0
 faster-whisper>=1.2.1
 jupyterlab-git>=0.51.4
 numpy==2.4.2
+langchain-huggingface>=1.2.0
