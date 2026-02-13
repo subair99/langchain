@@ -25,10 +25,28 @@ Return recipe suggestions and eventually the recipe instructions to the user, if
 
 """
 
+from langchain_groq import ChatGroq
+
+model = ChatGroq(model="openai/gpt-oss-120b", temperature=0.7)
+
+
 from langchain.agents import create_agent
 
 agent = create_agent(
-    model="gpt-5-nano",
+    model=model,
     tools=[web_search],
     system_prompt=system_prompt
 )
+
+
+# 1. Prepare the input
+user_input = {"messages": [("user", "I have leftover chicken and white rice. Find me a recipe!")]}
+
+# 2. Step on the gas (Invoke the agent)
+print("Chef is thinking and searching...")
+response = agent.invoke(user_input)
+
+# 3. Print the final message from the AI
+# In the modern LangGraph/LangChain format, the last message is the answer.
+print("\n--- CHEF'S SUGGESTION ---")
+print(response["messages"][-1].content)
