@@ -4,8 +4,8 @@ from typing import Dict, Any
 from tavily import TavilyClient
 from langchain_groq import ChatGroq
 from langchain.tools import tool
+# Import the specific factory from your library
 from langchain.agents import create_agent
-from langchain_core.messages import HumanMessage
 
 load_dotenv()
 
@@ -26,24 +26,24 @@ You are a personal chef. The user will give you a list of ingredients.
 Using the web search tool, find recipes and return instructions.
 """
 
-# 4. Initialize the Agent
-agent = create_react_agent(
+# 4. Initialize the Agent (Using your correct syntax)
+agent = create_agent(
     model=model,
     tools=[web_search],
-    state_modifier=system_prompt
+    system_prompt=system_prompt
 )
 
-# 5. EXECUTION BLOCK (This generates the output)
+# 5. EXECUTION BLOCK
 if __name__ == "__main__":
-    print("👨‍🍳 Chef is standing by...")
+    print("👨‍🍳 Chef is checking the pantry...")
     
-    # Define your request
-    inputs = {"messages": [HumanMessage(content="I have leftover chicken and rice. What can I make?")]}
+    # Send a prompt to the agent
+    query = "I have leftover chicken and rice. Give me a creative recipe!"
     
-    # Run the agent and capture the result
-    result = agent.invoke(inputs)
+    # Use invoke to get the response
+    response = agent.invoke({"messages": [("user", query)]})
     
-    # Extract and print the final response
-    final_answer = result["messages"][-1].content
-    print("\n--- CHEF'S RECOMMENDATION ---")
-    print(final_answer)
+    # Print the output
+    print("\n--- CHEF'S SUGGESTION ---")
+    # Note: Accessing the content from the last message in the returned list
+    print(response["messages"][-1].content)
