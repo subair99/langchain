@@ -39,10 +39,12 @@ agent = create_agent(
 )
 
 
+from langchain_core.messages import HumanMessage
+
 # 1. Prepare the input
 user_input = {"messages": [("user", "I have leftover chicken and white rice. Find me a recipe!")]}
 
-# 2. Step on the gas (Invoke the agent)
+# 2. Invoke the agent
 print("Chef is thinking and searching...")
 response = agent.invoke(user_input)
 
