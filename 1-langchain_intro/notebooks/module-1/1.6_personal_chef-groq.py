@@ -1,54 +1,49 @@
+import os
 from dotenv import load_dotenv
+from typing import Dict, Any
+from tavily import TavilyClient
+from langchain_groq import ChatGroq
+from langchain.tools import tool
+from langchain.agents import create_agent
+from langchain_core.messages import HumanMessage
 
 load_dotenv()
 
-from langchain.tools import tool
-from typing import Dict, Any
-from tavily import TavilyClient
-
+# 1. Setup Search Tool
 tavily_client = TavilyClient()
 
 @tool
 def web_search(query: str) -> Dict[str, Any]:
-
     """Search the web for information"""
-
     return tavily_client.search(query)
 
-system_prompt = """
-
-You are a personal chef. The user will give you a list of ingredients they have left over in their house.
-
-Using the web search tool, search the web for recipes that can be made with the ingredients they have.
-
-Return recipe suggestions and eventually the recipe instructions to the user, if requested.
-
-"""
-
-from langchain_groq import ChatGroq
-
+# 2. Setup LLM (Using the 120B model on Groq)
 model = ChatGroq(model="openai/gpt-oss-120b", temperature=0.7)
 
+# 3. Define the Persona
+system_prompt = """
+You are a personal chef. The user will give you a list of ingredients.
+Using the web search tool, find recipes and return instructions.
+"""
 
-from langchain.agents import create_agent
-
-agent = create_agent(
+# 4. Initialize the Agent
+agent = create_react_agent(
     model=model,
     tools=[web_search],
-    system_prompt=system_prompt
+    state_modifier=system_prompt
 )
 
-
-from langchain_core.messages import HumanMessage
-
-# 1. Prepare the input
-user_input = {"messages": [("user", "I have leftover chicken and white rice. Find me a recipe!")]}
-
-# 2. Invoke the agent
-print("Chef is thinking and searching...")
-response = agent.invoke(user_input)
-
-# 3. Print the final message from the AI
-# In the modern LangGraph/LangChain format, the last message is the answer.
-print("\n--- CHEF'S SUGGESTION ---")
-print(response["messages"][-1].content)
+# 5. EXECUTION BLOCK (This generates the output)
+if __name__ == "__main__":
+    print("👨‍🍳 Chef is standing by...")
+    
+    # Define your request
+    inputs = {"messages": [HumanMessage(content="I have leftover chicken and rice. What can I make?")]}
+    
+    # Run the agent and capture the result
+    result = agent.invoke(inputs)
+    
+    # Extract and print the final response
+    final_answer = result["messages"][-1].content
+    print("\n--- CHEF'S RECOMMENDATION ---")
+    print(final_answer)
