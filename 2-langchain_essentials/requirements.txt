@@ -1,7 +1,7 @@
 # Core Orchestration & Framework
 langgraph>=1.0.8
 langchain>=1.2.10
-langchain-community>=0.4.5
+langchain-community>=0.4.0,<0.4.5
 langgraph-cli[inmem]>=0.4.12
 
 # Model Integrations & Adapters
