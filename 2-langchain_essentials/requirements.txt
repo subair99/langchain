@@ -1,12 +1,17 @@
-langgraph>=1.0.0
-langchain>=1.0.0
-langchain-openai>=1.0.0
-langchain-anthropic>=1.0.0
-langchain-community>=0.4.0
-langgraph-cli[inmem]>=0.4.0
-langchain-mcp-adapters
-langchain-ollama
-jupyterlab>=4.5.1
-jupyterlab-git
-ipywidgets
-pandas
+# Core Orchestration & Framework
+langgraph>=1.0.8
+langchain>=1.2.10
+langchain-community>=0.4.5
+langgraph-cli[inmem]>=0.4.12
+
+# Model Integrations & Adapters
+langchain-openai>=1.1.9
+langchain-groq>=1.1.2
+langchain-mcp-adapters>=0.2.0
+langchain-ollama>=0.2.2
+
+# Environment & Data Tools
+jupyterlab>=4.5.4
+jupyterlab-git>=0.51.4
+ipywidgets>=8.1.8
+pandas>=3.0.0
