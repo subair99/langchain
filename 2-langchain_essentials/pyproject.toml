@@ -4,4 +4,17 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "ipywidgets>=8.1.8",
+    "jupyterlab>=4.5.4",
+    "jupyterlab-git>=0.51.4",
+    "langchain>=1.2.10",
+    "langchain-community>=0.4.0,<0.4.5",
+    "langchain-groq>=1.1.2",
+    "langchain-mcp-adapters>=0.2.0",
+    "langchain-ollama>=0.2.2",
+    "langchain-openai>=1.1.9",
+    "langgraph>=1.0.8",
+    "langgraph-cli[inmem]>=0.4.12",
+    "pandas>=3.0.0",
+]
