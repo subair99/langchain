@@ -57,4 +57,4 @@ if __name__ == "__main__":
     md = Markdown(response["messages"][-1].content)
     console.print(md)
 
-    # Use: uv run 1.5_personal_chef-ollama.py
+    # Use: uv run 1.6_personal_chef-ollama.py
