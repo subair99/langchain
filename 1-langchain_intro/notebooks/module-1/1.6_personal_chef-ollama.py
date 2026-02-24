@@ -1,4 +1,6 @@
 import os
+from rich.console import Console
+from rich.markdown import Markdown
 from dotenv import load_dotenv
 from typing import Dict, Any
 from tavily import TavilyClient
@@ -46,4 +48,11 @@ if __name__ == "__main__":
     print("\n--- CHEF'S SUGGESTION ---\n")
     # Note: Accessing the content from the last message in the returned list
     print(response["messages"][-1].content)
-    # Print in fine format
+    
+    # Initialize the console
+    console = Console()
+    
+    #Create a Markdown object and print it
+    print('\n')
+    md = Markdown(response["messages"][-1].content)
+    console.print(md)
