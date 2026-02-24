@@ -43,6 +43,7 @@ if __name__ == "__main__":
     response = agent.invoke({"messages": [("user", query)]})
     
     # Print the output
-    print("\n--- CHEF'S SUGGESTION ---")
+    print("\n--- CHEF'S SUGGESTION ---\n")
     # Note: Accessing the content from the last message in the returned list
     print(response["messages"][-1].content)
+    # Print in fine format
