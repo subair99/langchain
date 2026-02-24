@@ -4,7 +4,7 @@ from rich.markdown import Markdown
 from dotenv import load_dotenv
 from typing import Dict, Any
 from tavily import TavilyClient
-from langchain_groq import ChatGroq
+from langchain_ollama import ChatOllama
 from langchain.tools import tool
 from langchain.agents import create_agent
 
@@ -19,7 +19,7 @@ def web_search(query: str) -> Dict[str, Any]:
     return tavily_client.search(query)
 
 # 2. Setup LLM (Using the 120B model on Groq)
-model = ChatGroq(model="openai/gpt-oss-120b", temperature=0.7)
+model = ChatOllama(model="gpt-oss:20b", temperature=0)
 
 # 3. Define the Persona
 system_prompt = """
