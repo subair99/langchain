@@ -32,3 +32,4 @@ jupyterlab>=4.5.1
 pyright==1.1.393
 python-lsp-server==1.14.0
 ruff-lsp==0.0.62
+rich>=14.3.0

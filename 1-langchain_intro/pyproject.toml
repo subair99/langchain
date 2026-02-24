@@ -34,6 +34,7 @@ dependencies = [
     "pypdf>=6.2.0",
     "pyright==1.1.393",
     "python-lsp-server==1.14.0",
+    "rich>=14.3.0",
     "ruff-lsp==0.0.62",
     "scipy>=1.16.3",
     "sounddevice>=0.5.3",
