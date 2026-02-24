@@ -52,7 +52,9 @@ if __name__ == "__main__":
     # Initialize the console
     console = Console()
     
-    #Create a Markdown object and print it
+    # Create a Markdown object and print it
     print('\n')
     md = Markdown(response["messages"][-1].content)
     console.print(md)
+
+    # Use: uv run 1.5_personal_chef-ollama.py
