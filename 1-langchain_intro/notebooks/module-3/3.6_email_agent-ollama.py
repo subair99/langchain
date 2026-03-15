@@ -92,6 +92,9 @@ def dynamic_prompt_func(request: ModelRequest) -> str:
         return unauthenticated_prompt
 
 
+model = ChatOllama(model="qwen3:14b", temperature=0)
+
+
 agent = create_agent(
         "gpt-5-nano",
         tools=[authenticate, check_inbox, send_email],
