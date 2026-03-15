@@ -96,7 +96,7 @@ model = ChatOllama(model="qwen3:14b", temperature=0)
 
 
 agent = create_agent(
-        "gpt-5-nano",
+        model=model,
         tools=[authenticate, check_inbox, send_email],
         state_schema=AuthenticatedState,
         context_schema=EmailContext,
