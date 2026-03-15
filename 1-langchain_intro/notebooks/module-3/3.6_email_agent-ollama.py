@@ -93,7 +93,6 @@ def dynamic_prompt_func(request: ModelRequest) -> str:
 
 model = ChatOllama(model="qwen3:14b", temperature=0)
 
-
 agent = create_agent(
         model=model,
         tools=[authenticate, check_inbox, send_email],
