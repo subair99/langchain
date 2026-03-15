@@ -19,7 +19,7 @@ def web_search(query: str) -> Dict[str, Any]:
     return tavily_client.search(query)
 
 # 2. Setup LLM (Using the 120B model on Groq)
-model = ChatOllama(model="gpt-oss:20b", temperature=0)
+model = ChatOllama(model="qwen3:14b", temperature=0)
 
 # 3. Define the Persona
 system_prompt = """
