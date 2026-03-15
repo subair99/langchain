@@ -91,7 +91,6 @@ def dynamic_prompt_func(request: ModelRequest) -> str:
     else:
         return unauthenticated_prompt
 
-
 model = ChatOllama(model="qwen3:14b", temperature=0)
 
 
