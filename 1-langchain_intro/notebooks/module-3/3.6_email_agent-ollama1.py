@@ -105,12 +105,14 @@ agent = create_agent(
 
 async def run_email_agent():
     console = Console()
-    context = EmailContext() # Pydantic object works directly now
+    
+    # Use a dictionary for the actual call to stop the Pydantic warning
+    # but keep the EmailContext object for organization if you like
+    raw_context = EmailContext().model_dump() 
     state = {"messages": [], "authenticated": False}
 
     print("🔐 Starting Secure Email Agent...")
 
-    # FLOW: Authenticate -> Check -> Send (with Approval)
     steps = [
         "Please authenticate me. My email is julie@example.com and password is password123",
         "Great. Now check my inbox and tell me if I have any mail.",
@@ -121,32 +123,39 @@ async def run_email_agent():
         print(f"\n[User]: {query}")
         state["messages"].append(("user", query))
         
-        # Invoke Agent
-        response = await agent.ainvoke(state, context=context)
+        # 1. First Pass: Agent processes the query
+        response = await agent.ainvoke(state, context=raw_context)
         
-        # Check for HITL Interrupt (Agent wants to call send_email)
+        # 2. Check for HITL Interrupt
         last_msg = response["messages"][-1]
-        
         if hasattr(last_msg, "tool_calls") and any(tc['name'] == 'send_email' for tc in last_msg.tool_calls):
             console.print("\n[bold yellow]⚠️  HITL INTERRUPT: The agent wants to send an email.[/bold yellow]")
             confirm = input("Do you approve this action? (yes/no): ")
             
             if confirm.lower() == 'yes':
-                # Resume by invoking again with the state that contained the tool call
-                response = await agent.ainvoke(response, context=context)
+                # Resume: middleware sees the approval and runs the tool
+                response = await agent.ainvoke(response, context=raw_context)
             else:
                 print("❌ Action cancelled.")
                 break
 
-        # Follow-up: If the last message is just a tool result, let the LLM talk back to the user
-        if response["messages"][-1].type == "tool":
-            response = await agent.ainvoke(response, context=context)
+        # 3. Follow-up: Handle tool results or conversational gaps
+        # We loop here because some models need a "nudge" to turn a tool result into a sentence
+        while response["messages"][-1].type == "tool":
+            response = await agent.ainvoke(response, context=raw_context)
 
-        # Update loop state
+        # Update loop state for next iteration
         state = response
         
-        # Display output
-        console.print(Markdown(f"**Agent:** {state['messages'][-1].content}"))
+        # 4. Display output
+        content = state['messages'][-1].content
+        if content:
+            console.print(Markdown(f"**Agent:** {content}"))
+        else:
+            # Fallback if the model is being shy after a tool call
+            console.print("[italic]Agent performed an action but provided no text response.[/italic]")
+
+
 
 if __name__ == "__main__":
     asyncio.run(run_email_agent())
