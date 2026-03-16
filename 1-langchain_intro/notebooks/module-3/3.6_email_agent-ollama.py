@@ -1,4 +1,6 @@
 import asyncio
+from rich.console import Console
+from rich.markdown import Markdown
 from dotenv import load_dotenv
 from langchain_ollama import ChatOllama
 from dataclasses import dataclass
