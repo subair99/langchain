@@ -170,5 +170,6 @@ async def run_email_agent():
             final_content = response_3["messages"][-1].content
             console.print(Markdown(f"**Agent:** {final_content}"))
 
+
 if __name__ == "__main__":
     asyncio.run(run_email_agent())
