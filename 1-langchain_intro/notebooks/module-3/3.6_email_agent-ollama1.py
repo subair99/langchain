@@ -108,26 +108,19 @@ agent = create_agent(
 
 async def run_email_agent():
     console = Console()
-    
     context: EmailContext = {
         "email_address": "julie@example.com",
         "password": "password123"
     }
-    
-    # We use a state dictionary that tracks all messages
     state = {"messages": [], "authenticated": False}
 
-    print("🔐 Starting Secure Email Agent...")
+    print("🔐 Starting Secure Email Agent (Type 'exit' to quit)...")
 
-    steps = [
-        "Please authenticate me. My email is julie@example.com and password is password123",
-        "Great. Now check my inbox and tell me if I have any mail.",
-        "Reply to Jane and tell her I'd love to grab coffee on Wednesday."
-    ]
-
-    for query in steps:
-        print(f"\n[User]: {query}")
-        # Append user message to state
+    while True:
+        query = input("\n[User]: ")
+        if query.lower() == "exit":
+            break
+            
         state["messages"].append(("user", query))
         
         # 1. Invoke Agent
@@ -141,28 +134,24 @@ async def run_email_agent():
             print(f"To: {tc['args'].get('to')}\nBody: {tc['args'].get('body')}")
             
             confirm = input("\nDo you approve this action? (yes/no): ")
-            
             if confirm.lower() == 'yes':
-                # Resume execution
                 response = await agent.ainvoke(response, context=context)
             else:
                 print("❌ Action cancelled.")
-                break
+                # We do NOT break here; we just continue the conversation
+                continue
 
-        # 3. Follow-up: Handle tool results
+        # 3. Follow-up: Ensure the agent provides a text response
         while response["messages"][-1].type == "tool":
             response = await agent.ainvoke(response, context=context)
 
-        # 4. Update state to include all history
         state = response
         
-        # 5. Display the latest AI conversational response
-        # We look backwards through the messages for the most recent AI response
+        # 4. Display AI response
         ai_responses = [m for m in state["messages"] if hasattr(m, 'type') and m.type == 'ai' and m.content]
         if ai_responses:
             console.print(Markdown(f"**Agent:** {ai_responses[-1].content}"))
-        else:
-            console.print("[italic]Agent performed an action.[/italic]")
+            
 
 if __name__ == "__main__":
     asyncio.run(run_email_agent())
