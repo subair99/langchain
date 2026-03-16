@@ -104,16 +104,17 @@ agent = create_agent(
     ],
 )
 
-# --- 5. EXECUTION BLOCK ---
+# --- 5. EXECUTION BLOCK (Updated) ---
 
 async def run_email_agent():
     console = Console()
     
-    # Define context as a standard dictionary
     context: EmailContext = {
         "email_address": "julie@example.com",
         "password": "password123"
     }
+    
+    # We use a state dictionary that tracks all messages
     state = {"messages": [], "authenticated": False}
 
     print("🔐 Starting Secure Email Agent...")
@@ -126,41 +127,42 @@ async def run_email_agent():
 
     for query in steps:
         print(f"\n[User]: {query}")
+        # Append user message to state
         state["messages"].append(("user", query))
         
         # 1. Invoke Agent
         response = await agent.ainvoke(state, context=context)
         
-        # 2. Check for HITL Interrupt (Agent is paused before sending email)
+        # 2. Check for HITL Interrupt
         last_msg = response["messages"][-1]
         if hasattr(last_msg, "tool_calls") and any(tc['name'] == 'send_email' for tc in last_msg.tool_calls):
             console.print("\n[bold yellow]⚠️  HITL INTERRUPT: The agent wants to send an email.[/bold yellow]")
-            # Display tool arguments so the user knows what they are approving
             tc = next(tc for tc in last_msg.tool_calls if tc['name'] == 'send_email')
             print(f"To: {tc['args'].get('to')}\nBody: {tc['args'].get('body')}")
             
             confirm = input("\nDo you approve this action? (yes/no): ")
             
             if confirm.lower() == 'yes':
-                # Resume: Re-invoke with the state containing the tool call
+                # Resume execution
                 response = await agent.ainvoke(response, context=context)
             else:
                 print("❌ Action cancelled.")
                 break
 
-        # 3. Follow-up: Ensure the agent provides a text response after tool execution
+        # 3. Follow-up: Handle tool results
         while response["messages"][-1].type == "tool":
             response = await agent.ainvoke(response, context=context)
 
-        # Update state for next turn
+        # 4. Update state to include all history
         state = response
         
-        # 4. Display output
-        content = state['messages'][-1].content
-        if content:
-            console.print(Markdown(f"**Agent:** {content}"))
+        # 5. Display the latest AI conversational response
+        # We look backwards through the messages for the most recent AI response
+        ai_responses = [m for m in state["messages"] if hasattr(m, 'type') and m.type == 'ai' and m.content]
+        if ai_responses:
+            console.print(Markdown(f"**Agent:** {ai_responses[-1].content}"))
         else:
-            console.print("[italic]Agent completed the task.[/italic]")
+            console.print("[italic]Agent performed an action.[/italic]")
 
 if __name__ == "__main__":
     asyncio.run(run_email_agent())
