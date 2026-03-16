@@ -14,16 +14,13 @@ from typing import Callable
 
 load_dotenv()
 
-
 @dataclass
 class EmailContext:
     email_address: str = "julie@example.com"
     password: str = "password123"
 
-
 class AuthenticatedState(AgentState):
     authenticated: bool
-
 
 @tool
 def check_inbox() -> str:
@@ -34,12 +31,10 @@ def check_inbox() -> str:
     - best, Jane (jane@example.com)
     """
 
-
 @tool
 def send_email(to: str, subject: str, body: str) -> str:
     """Send an response email"""
     return f"Email sent to {to} with subject {subject} and body {body}"
-
 
 @tool
 def authenticate(email: str, password: str, runtime: ToolRuntime) -> Command:
@@ -63,37 +58,25 @@ def authenticate(email: str, password: str, runtime: ToolRuntime) -> Command:
             }
         )
 
-
 @wrap_model_call
 async def dynamic_tool_call(
     request: ModelRequest, handler: Callable[[ModelRequest], ModelResponse]
 ) -> ModelResponse:
-    """Allow read inbox and send email tools only if user provides correct email and password"""
-
     authenticated = request.state.get("authenticated")
-
     if authenticated:
         tools = [check_inbox, send_email]
     else:
         tools = [authenticate]
-
     request = request.override(tools=tools)
     return await handler(request)
-
 
 authenticated_prompt = "You are a helpful assistant that can check the inbox and send emails."
 unauthenticated_prompt = "You are a helpful assistant that can authenticate users."
 
-
 @dynamic_prompt
 def dynamic_prompt_func(request: ModelRequest) -> str:
-    """Generate system prompt based on authentication status"""
     authenticated = request.state.get("authenticated")
-
-    if authenticated:
-        return authenticated_prompt
-    else:
-        return unauthenticated_prompt
+    return authenticated_prompt if authenticated else unauthenticated_prompt
 
 model = ChatOllama(model="qwen3:14b", temperature=0)
 
@@ -109,68 +92,66 @@ agent = create_agent(
                 interrupt_on={
                     "authenticate": False,
                     "check_inbox": False,
-                    "send_email": True,
+                    "send_email": True, # This will trigger an interrupt
                 }
             ),
         ],
     )
 
-
-
 async def run_email_agent():
     console = Console()
     
-    # 1. Initialize the state and context
-    # Note: 'authenticated' starts as False based on your logic
-    initial_state = {"messages": [], "authenticated": False}
+    # 1. Initialize context as a dictionary for Pydantic
     context = EmailContext().__dict__ 
-    response = await agent.ainvoke(state, context=context)
 
     print("🔐 Starting Secure Email Agent...")
 
     # 2. Step One: Authentication
-    # We provide the credentials that match our EmailContext
     query_1 = "Please authenticate me. My email is julie@example.com and password is password123"
-    
     print(f"\n[User]: {query_1}")
-    response_1 = await agent.ainvoke(
-        {"messages": [("user", query_1)], "authenticated": False},
-        context=context
-    )
     
+    # Corrected variable 'state' to 'initial_state'
+    initial_state = {"messages": [("user", query_1)], "authenticated": False}
+    
+    response_1 = await agent.ainvoke(initial_state, context=context)
+    
+    # The LLM might need a second pass to acknowledge the tool result
+    if response_1["messages"][-1].type == "tool":
+         response_1 = await agent.ainvoke(response_1, context=context)
+
     auth_content = response_1["messages"][-1].content
     console.print(Markdown(f"**Agent:** {auth_content}"))
 
-    # 3. Step Two: Check Inbox (Only works if authenticated is now True)
+    # 3. Step Two: Check Inbox
     if response_1.get("authenticated"):
         query_2 = "Great. Now check my inbox and tell me if I have any mail."
         print(f"\n[User]: {query_2}")
         
-        # We pass the updated state (authenticated=True) back into the next call
-        response_2 = await agent.ainvoke(
-            response_1, # Pass the entire state forward
-            context=context
-        )
+        # Append the new message to the existing history
+        state_2 = {**response_1, "messages": response_1["messages"] + [("user", query_2)]}
+        response_2 = await agent.ainvoke(state_2, context=context)
         
+        # Again, if the last message is just the tool output, invoke again to get the text response
+        if response_2["messages"][-1].type == "tool":
+            response_2 = await agent.ainvoke(response_2, context=context)
+
         inbox_content = response_2["messages"][-1].content
         console.print(Markdown(f"**Agent:** {inbox_content}"))
 
-        # 4. Step Three: Send Email (Triggers Human-in-the-loop interruption)
+        # 4. Step Three: Send Email (HITL)
         query_3 = "Reply to Jane and tell her I'd love to grab coffee on Wednesday."
         print(f"\n[User]: {query_3}")
         
-        response_3 = await agent.ainvoke(
-            response_2,
-            context=context
-        )
+        state_3 = {**response_2, "messages": response_2["messages"] + [("user", query_3)]}
+        response_3 = await agent.ainvoke(state_3, context=context)
         
+        # Handle the HITL interruption
+        # If it's interrupted, you would usually prompt the user for 'yes/no' 
+        # For this execution, we'll just print the current status
         final_content = response_3["messages"][-1].content
-        console.print(Markdown(f"**Agent:** {final_content}"))
+        console.print(Markdown(f"**Agent Status:** {final_content}"))
+    else:
+        print("❌ Authentication failed.")
 
 if __name__ == "__main__":
-    # Because the agent's middleware and tools are likely async, 
-    # we run this inside an asyncio loop.
     asyncio.run(run_email_agent())
-
-
-    # Use: uv run 3.6_email_agent-ollama.py
