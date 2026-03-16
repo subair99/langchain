@@ -1,5 +1,6 @@
 import asyncio
 from dotenv import load_dotenv
+
 from dataclasses import dataclass
 from rich.console import Console
 from rich.markdown import Markdown
