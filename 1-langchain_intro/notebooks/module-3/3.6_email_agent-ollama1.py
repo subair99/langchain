@@ -145,13 +145,30 @@ async def run_email_agent():
         state_3 = {**response_2, "messages": response_2["messages"] + [("user", query_3)]}
         response_3 = await agent.ainvoke(state_3, context=context)
         
-        # Handle the HITL interruption
-        # If it's interrupted, you would usually prompt the user for 'yes/no' 
-        # For this execution, we'll just print the current status
-        final_content = response_3["messages"][-1].content
-        console.print(Markdown(f"**Agent Status:** {final_content}"))
-    else:
-        print("❌ Authentication failed.")
+        # Check if we are at an interrupt point
+        # In LangChain agents, an interrupt often leaves the last message as a Tool Call
+        if response_3["messages"][-1].type == "ai" and "tool_calls" in response_3["messages"][-1].additional_kwargs:
+            tool_call = response_3["messages"][-1].additional_kwargs["tool_calls"][0]
+            print(f"\n⚠️  INTERRUPT: Agent wants to call {tool_call['function']['name']}")
+            print(f"Arguments: {tool_call['function']['arguments']}")
+            
+            confirm = input("\nDo you approve sending this email? (yes/no): ")
+            
+            if confirm.lower() == 'yes':
+                # To resume, we invoke the agent again with the same state. 
+                # The middleware will see the approval and proceed.
+                response_4 = await agent.ainvoke(response_3, context=context)
+                
+                # After sending, the LLM usually needs one more pass to say "I've sent it"
+                if response_4["messages"][-1].type == "tool":
+                    response_4 = await agent.ainvoke(response_4, context=context)
+                    
+                console.print(Markdown(f"**Agent:** {response_4['messages'][-1].content}"))
+            else:
+                print("❌ Action cancelled by user.")
+        else:
+            final_content = response_3["messages"][-1].content
+            console.print(Markdown(f"**Agent:** {final_content}"))
 
 if __name__ == "__main__":
     asyncio.run(run_email_agent())
