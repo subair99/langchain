@@ -2,8 +2,6 @@ import asyncio
 from dotenv import load_dotenv
 from langchain_ollama import ChatOllama
 from dataclasses import dataclass
-from rich.console import Console
-from rich.markdown import Markdown
 from langchain.agents import AgentState, create_agent
 from langchain.tools import tool, ToolRuntime
 from langgraph.types import Command
