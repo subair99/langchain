@@ -39,4 +39,6 @@ Body:
 
 Would you like to reply to this email or take any other action?
 
-[User]:
+[User]: check my email
+Agent: You have the same email from Jane (jane@example.com) in your inbox. There are no new messages. Would you like to proceed with
+replying to Jane's email now?
