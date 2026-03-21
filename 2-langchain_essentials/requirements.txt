@@ -15,3 +15,4 @@ jupyterlab>=4.5.4
 jupyterlab-git>=0.51.4
 ipywidgets>=8.1.8
 pandas>=3.0.0
+sqlalchemy>=2.0.0
